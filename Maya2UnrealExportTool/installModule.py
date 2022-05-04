@@ -7,7 +7,7 @@ from pathlib import Path
 import argparse
 
 '''
-The following codes are original from the class of Pipeline&TD, with some modifications.
+The following codes are original from the class of Pipeline&TD, with some corrections and improvements.
 '''
 
 maya_locations = {
