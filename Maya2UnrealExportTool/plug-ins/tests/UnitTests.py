@@ -2,9 +2,13 @@ import maya.standalone
 import unittest
 
 class TestMayaScene(unittest.TestCase):
-    @classmethod
-    def setUpClass(self):
-        print("setup tests.")
+    def setUp(self):
+        print("Set up tests for maya scene.")
+
+
+class TestLiveLink(unittest.TestCase):
+    def setUp(self):
+        print("Set up tests for live link.")
 
 
 if __name__ == '__main__':
