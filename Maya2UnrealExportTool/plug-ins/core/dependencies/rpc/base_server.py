@@ -66,7 +66,7 @@ def execute_queued_calls(*extra_args):
                 raise error
 
 
-class BaseServer(SimpleXMLRPCServer):
+class BaseServer(SimpleXMLRPCServer, object):
     def __init__(self, addr, requestHandler=SimpleXMLRPCRequestHandler,
                  logRequests=True, allow_none=False, encoding=None,
                  bind_and_activate=True, use_builtin_types=False):
@@ -77,7 +77,7 @@ class BaseServer(SimpleXMLRPCServer):
         else:
             super(BaseServer, self).__init__(addr, requestHandler,
                  logRequests, allow_none, encoding,
-                 bind_and_activate, use_builtin_types)
+                 bind_and_activate)
 
     def serve_until_killed(self):
         """
@@ -88,7 +88,7 @@ class BaseServer(SimpleXMLRPCServer):
             self.handle_request()
 
 
-class BaseRPCServer:
+class BaseRPCServer(object):
     def __init__(self, name, port, is_thread=False):
         """
         Initialize the base server.
@@ -186,7 +186,11 @@ class BaseRPCServerThread(threading.Thread, BaseRPCServer):
         :param str name: The name of the server.
         :param int port: The number of the server port.
         """
-        threading.Thread.__init__(self, name=name, daemon=True)
+        if sys.version_info.major == 3:
+            threading.Thread.__init__(self, name=name, daemon=True)
+        else:
+            threading.Thread.__init__(self, name=name)
+            self.daemon = True
         BaseRPCServer.__init__(self, name, port, is_thread=True)
 
     def run(self):
@@ -203,7 +207,7 @@ class BaseRPCServerThread(threading.Thread, BaseRPCServer):
         return
 
 
-class BaseRPCServerManager:
+class BaseRPCServerManager(object):
     @abc.abstractmethod
     def __init__(self):
         """

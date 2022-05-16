@@ -44,5 +44,7 @@ class RPCServer(BaseRPCServerManager):
         Starts the server thread.
         """
         import maya.api.OpenMaya as OpenMaya
-        OpenMaya.MTimerMessage.addTimerCallback(1, execute_queued_calls, persistent=True)
+        def _call_back(*args):
+            execute_queued_calls()
+        OpenMaya.MTimerMessage.addTimerCallback(1, _call_back)
         super(RPCServer, self).start_server_thread()
