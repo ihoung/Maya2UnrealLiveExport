@@ -1,5 +1,6 @@
 # Copyright Epic Games, Inc. All Rights Reserved.
 
+import sys
 import os
 
 from . import base_server
@@ -19,7 +20,10 @@ class RPCServer(BaseRPCServerManager):
         """
         Initialize the unreal rpc server, with its name and specific port.
         """
-        super(RPCServer, self).__init__()
+        if sys.version_info.major == 3:
+            super().__init__()
+        else:
+            super(RPCServer, self).__init__()
         self.name = 'UnrealRPCServer'
         self.port = int(os.environ.get('RPC_PORT', 9998))
         self.threaded_server_class = UnrealRPCServerThread

@@ -7,9 +7,7 @@ import sys
 import inspect
 
 if sys.version_info.major == 3:
-    from http.client import HTTPException
-else:
-    from httplib import HTTPException
+    from http.client import RemoteDisconnected
 
 sys.path.append(os.path.dirname(__file__))
 import rpc.factory
@@ -139,7 +137,10 @@ def run_unreal_python_commands(remote_exec, commands, failed_connection_attempts
                 run_unreal_python_commands(remote_exec, commands, failed_connection_attempts + 1)
             else:
                 remote_exec.stop()
-                raise ConnectionError("Could not find an open Unreal Editor instance!")
+                if sys.version_info.major == 3:
+                    raise ConnectionError("Could not find an open Unreal Editor instance!")
+                else:
+                    raise Exception("Could not find an open Unreal Editor instance!")
 
     # shutdown the connection
     finally:
@@ -170,9 +171,14 @@ def is_connected():
     """
     Checks the rpc server connection
     """
+    if sys.version_info.major == 3:
+        exception = RemoteDisconnected, ConnectionRefusedError
+    else:
+        exception = Exception
+
     try:
         return rpc_client.proxy.is_running()
-    except (ConnectionResetError, ConnectionRefusedError, HTTPException):
+    except (exception):
         return False
 
 
@@ -200,7 +206,10 @@ def bootstrap_unreal_with_rpc_server():
                 ]
             )
             if result:
-                raise RuntimeError(result)
+                if sys.version_info.major == 3:
+                    raise RuntimeError(result)
+                else:
+                    raise Exception(result)
 
 
 class Unreal:

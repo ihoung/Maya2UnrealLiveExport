@@ -1,6 +1,8 @@
-# Dependencies Code Instruction
+# Dependencies Instruction
 
-The code for most dependencies comes from ***BlenderTools*** on GitHub (Epic Games).
+Most dependencies comes from ***BlenderTools*** of Epic Games on GitHub.
+
+The codes have been modified to be python2 compatible.
 
 Reference:
 https://github.com/EpicGames/BlenderTools/tree/master/send2ue/dependencies

@@ -31,9 +31,12 @@ class RPCServer(BaseRPCServerManager):
         """
         Initialize the blender rpc server, with its name and specific port.
         """
-        super(RPCServer, self).__init__()
+        if sys.version_info.major == 3:
+            super().__init__()
+        else:
+            super(RPCServer, self).__init__()
         self.name = 'MayaRPCServer'
-        self.port = int(os.environ.get('RPC_PORT', 9997))
+        self.port = int(os.environ.get('RPC_PORT', 9996))
         self.threaded_server_class = MayaRPCServerThread
 
     def start_server_thread(self):

@@ -14,9 +14,10 @@ from PySide2.QtGui import QColor, QFont
 from PySide2.QtUiTools import QUiLoader
 from shiboken2 import wrapInstance
 
-from core import utilities
+from core import controller, export
 if sys.version_info <= (3,4):
-    reload(utilities)
+    reload(controller)
+    reload(export)
 
 maya_useNewAPI = True
 
@@ -52,6 +53,8 @@ class ExportWindow(QtWidgets.QWidget):
         self.ui.btn_exportSelected.clicked.connect(self.export_asset)
         self.ui.btn_cancel.clicked.connect(self.close)
 
+        self.export_fbx = False
+
     def open_dir_browser(self, browser_type):
         dir_path = cmds.fileDialog2(caption='Select Your Directory',fileMode=3, okCaption='Confirm')
         if dir_path is None:
@@ -61,7 +64,7 @@ class ExportWindow(QtWidgets.QWidget):
             # If directory dosen't contain a 'Content' folder, it is absolutely not a Unreal project.
             content_dir = dir_path + "/Content/"
             if not os.path.exists(content_dir):
-                cmds.confirmDialog(title="Error", message="Can't find 'Content' folder. Invalid Unreal project path!")
+                cmds.confirmDialog(title="Error", message="Can't find 'Content' folder. Invalid path of Unreal project!")
             else:
                 # If detect 'Content' folder, add other asset paths automatically.
                 # Default folders are 'Maps', 'Meshes', 'Textures' and 'Materials'.
@@ -72,7 +75,7 @@ class ExportWindow(QtWidgets.QWidget):
                 if os.path.exists(content_dir + "Meshes"):
                     self.ui.text_ModelPath.setPlainText(content_dir + "Meshes")
                 if os.path.exists(content_dir + "FBXs"):
-                    self.ui.text_MaterialPath.setPlainText(content_dir + "FBXs")
+                    self.ui.text_FbxPath.setPlainText(content_dir + "FBXs")
         elif browser_type == 'Map':
             self.ui.text_MapPath.setPlainText(dir_path)
         elif browser_type == 'Model':
@@ -84,34 +87,40 @@ class ExportWindow(QtWidgets.QWidget):
         if self.ui.checkBox_keepFbx.isChecked():
             self.ui.text_FbxPath.setEnabled(True)
             self.ui.btn_FbxPath.setEnabled(True)
+            self.export_fbx = True
         else:
             self.ui.text_FbxPath.setEnabled(False)
             self.ui.btn_FbxPath.setEnabled(False)
+            self.export_fbx = False
 
-    def export_asset(self):
+    def check_export_path(self):
         content_dir = self.ui.text_ProjectPath.toPlainText() + "/Content/"
         # Check if paths are valid.
         msgInfo = ""
         if not os.path.exists(content_dir):
-            msgInfo += "Can't find 'Content' folder. Invalid Unreal project path!\n"
+            msgInfo += "Can't find 'Content' folder. Invalid path of Unreal project!\n"
         if not os.path.exists(self.ui.text_MapPath.toPlainText()):
             msgInfo += "Invalid Map path!\n"
         if not os.path.exists(self.ui.text_ModelPath.toPlainText()):
             msgInfo += "Invalid Model path!\n"
-        if not os.path.exists(self.ui.text_TexturePath.toPlainText()):
-            msgInfo += "Invalid Texture path!\n"
-        if not os.path.exists(self.ui.text_MaterialPath.toPlainText()):
-            msgInfo += "Invalid Material path!"
+        if self.export_fbx and not os.path.exists(self.ui.text_FbxPath.toPlainText()):
+            msgInfo += "Invalid FBX path!\n"
         if msgInfo:
             cmds.confirmDialog(title="Error", message=msgInfo)
-            return
-        # import assets to the corresponding folders
+            return False
+        return True
+
+    def export_asset(self):
+        if self.check_export_path():
+            # import assets to the corresponding folders
+            export.export_selected_mesh()
 
     def export_scene(self):
-        pass
+        if self.check_export_path():
+            export.export_scene_meshes()
 
     def restart_unreal_link(self):
-        utilities.start_RPC_servers()
+        controller.start_RPC_servers()
 
 
 class M2UExport(OpenMaya.MPxCommand):
