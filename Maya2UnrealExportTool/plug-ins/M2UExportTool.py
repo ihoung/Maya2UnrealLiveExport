@@ -86,11 +86,11 @@ class ExportWindow(QtWidgets.QWidget):
     def check_fbx_storage_state(self):
         if self.ui.checkBox_keepFbx.isChecked():
             self.ui.text_FbxPath.setEnabled(True)
-            self.ui.btn_FbxPath.setEnabled(True)
+            self.ui.btn_FbxPathBrowser.setEnabled(True)
             self.export_fbx = True
         else:
             self.ui.text_FbxPath.setEnabled(False)
-            self.ui.btn_FbxPath.setEnabled(False)
+            self.ui.btn_FbxPathBrowser.setEnabled(False)
             self.export_fbx = False
 
     def check_export_path(self):
@@ -112,12 +112,22 @@ class ExportWindow(QtWidgets.QWidget):
 
     def export_asset(self):
         if self.check_export_path():
-            # import assets to the corresponding folders
-            export.export_selected_mesh()
+            if self.export_fbx:
+                fbx_dir = self.ui.text_FbxPath.toPlainText()
+            else:
+                project_dir = self.ui.text_ProjectPath.toPlainText()
+                fbx_dir = project_dir + '/Fbx_temp/'
+            # export assets to the corresponding folders
+            export.export_selected_mesh(fbx_dir, keepFbx=self.export_fbx)
 
     def export_scene(self):
         if self.check_export_path():
-            export.export_scene_meshes()
+            if self.export_fbx:
+                fbx_dir = self.ui.text_FbxPath.toPlainText()
+            else:
+                project_dir = self.ui.text_ProjectPath.toPlainText()
+                fbx_dir = project_dir + '/Fbx_temp/'
+            export.export_scene_meshes(fbx_dir, keepFbx=self.export_fbx)
 
     def restart_unreal_link(self):
         controller.start_RPC_servers()
