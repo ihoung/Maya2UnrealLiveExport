@@ -68,7 +68,8 @@ class RPCUnmarshaller(Unmarshaller):
                             raise exception(exception_message)
 
             # if all else fails just raise the fault
-            raise Fault(**marshallables)
+            raise (Fault(**marshallables) if sys.version_info.major == 3 
+                    else Fault(marshallables.get('faultCode',''), marshallables.get('faultString','')))
         return tuple(self._stack)
 
 

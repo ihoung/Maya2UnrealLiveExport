@@ -73,7 +73,7 @@ class RPCFactory:
                     import_code.append('from {0} import {1}'.format(module_name,key))
                     break
 
-        return textwrap.indent('\n'.join(import_code), ' ' * 4)
+        return textwrap.indent('\n'.join(import_code), ' ' * 4) if sys.version_info == 3 else '\n'.join(' '*4+line_text for line_text in import_code)
 
     def _get_code(self, function):
         """
@@ -104,6 +104,7 @@ class RPCFactory:
         :return Any: The return value.
         """
         code = self._get_code(function)
+        exception = ConnectionRefusedError if sys.version_info.major == 3 else OSError
         try:
             # if additional paths are explicitly set, then use them. This is useful with the client is on another
             # machine and the python paths are different
@@ -120,9 +121,9 @@ class RPCFactory:
             if os.environ.get('RPC_DEBUG'):
                 logger.debug(response)
 
-        except ConnectionRefusedError:
+        except exception as error:
             server_name = os.environ.get('RPC_SERVER_{0}'.format(self.rpc_client.port), self.rpc_client.port)
-            raise ConnectionRefusedError('No connection could be made with "{0}"'.format(server_name))
+            raise exception('No connection could be made with "{0}"'.format(server_name))
 
     def run_function_remotely(self, function, args):
         """
@@ -143,7 +144,8 @@ class RPCFactory:
         # step back 2 frames in the callstack
         caller_frame = outer_frame_info[2][0]
         # create a trace back that is relevant to the remote code rather than the code transporting it
-        call_traceback = types.TracebackType(None, caller_frame, caller_frame.f_lasti, caller_frame.f_lineno)
+        if sys.version_info >= (3,7):
+            call_traceback = types.TracebackType(None, caller_frame, caller_frame.f_lasti, caller_frame.f_lineno)
         # call the remote function
         if not self.rpc_client.marshall_exceptions:
             # if exceptions are not marshalled then receive the default Faut
@@ -156,7 +158,10 @@ class RPCFactory:
             stack_trace = str(exception) + get_line_link(function)
             if isinstance(exception, Fault):
                 raise Fault(exception.faultCode, exception.faultString)
-            raise exception.__class__(stack_trace).with_traceback(call_traceback)
+            if sys.version_info >= (3,7):
+                raise exception.__class__(stack_trace).with_traceback(call_traceback)
+            else:
+                raise exception.__class__(stack_trace)
 
 
 def remote_call(port, default_imports=None, remap_pairs=None):
@@ -194,7 +199,10 @@ def remote_class(decorator):
         for attribute, value in cls.__dict__.items():
             validate_class_method(cls, value)
             if callable(getattr(cls, attribute)):
-                setattr(cls, attribute, decorator(getattr(cls, attribute)))
+                if sys.version_info.major == 3:
+                    setattr(cls, attribute, decorator(getattr(cls, attribute)))
+                else:
+                    setattr(cls, attribute, staticmethod(decorator(getattr(cls, attribute))))
         return cls
     return decorate
 
