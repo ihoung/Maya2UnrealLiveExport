@@ -40,7 +40,6 @@ class RPCFactory:
         :return str: The new code of the callable with all its references added.
         """
         import_code = self.default_imports
-
         client_module = inspect.getmodule(function)
         self.file_path = get_source_file_path(function)
 
@@ -54,8 +53,17 @@ class RPCFactory:
                     self.file_path.replace(client_path_root, '').replace(os.sep, '/').strip('/')
                 )
                 break
+        
+        if sys.version_info.major == 2:
+            import_code.append('sys.path.append(r"{}")'.format(os.path.dirname(server_module_path).replace(os.sep, '/')))
+            import_code.append('import imp')
+            # insert import class as inline
+            # inline_class = []
 
         for key in dir(client_module):
+            if key is 'unreal':
+                continue
+
             for line_number, line in enumerate(code):
                 if line.startswith('def '):
                     continue
@@ -67,9 +75,13 @@ class RPCFactory:
                         base_name = os.path.basename(self.file_path)
 
                     module_name, file_extension = os.path.splitext(base_name)
-                    import_code.append(
-                        '{0} = SourceFileLoader("{0}", r"{1}").load_module()'.format(module_name,server_module_path)
-                    )
+                    if sys.version_info.major == 3:
+                        import_code.append(
+                            '{0} = SourceFileLoader("{0}", r"{1}").load_module()'.format(module_name,server_module_path)
+                        )
+                    else: # python2
+                        # inline_class.append(key)
+                        import_code.append('imp.load_source("{0}", r"{1}")'.format(module_name,server_module_path.replace('.pyc','.py')))
                     import_code.append('from {0} import {1}'.format(module_name,key))
                     break
 

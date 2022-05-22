@@ -7,7 +7,10 @@ import os
 import sys
 
 sys.path.append(os.path.dirname(__file__) + r'/../plug-ins/core')
+sys.path.append(os.path.dirname(__file__) + r'/../plug-ins/core/dependencies')
 import export
+import controller
+from dependencies.unreal import UnrealRemoteCalls
 
 
 class TestMayaScene(unittest.TestCase):
@@ -29,6 +32,11 @@ class TestMayaScene(unittest.TestCase):
 class TestLiveLink(unittest.TestCase):
     def setUp(self):
         print("Set up tests for live link.")
+
+    def test_remote_call(self):
+        # controller.start_RPC_servers()
+        # UnrealRemoteCalls.import_asset('', None, None)
+        pass
 
 
 if __name__ == '__main__':

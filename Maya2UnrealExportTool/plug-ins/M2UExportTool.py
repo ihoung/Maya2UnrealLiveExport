@@ -1,7 +1,9 @@
 from imp import reload
 import os
+from posixpath import pardir
 import sys
 from functools import partial
+from xml.etree.ElementPath import get_parent_map
 
 import maya.api.OpenMaya as OpenMaya
 import maya.api.OpenMayaUI as OpenMayaUI
@@ -95,13 +97,15 @@ class ExportWindow(QtWidgets.QWidget):
 
     def check_export_path(self):
         content_dir = self.ui.text_ProjectPath.toPlainText() + "/Content/"
+        map_dir = self.ui.text_MapPath.toPlainText()
+        model_dir = self.ui.text_ModelPath.toPlainText()
         # Check if paths are valid.
         msgInfo = ""
         if not os.path.exists(content_dir):
             msgInfo += "Can't find 'Content' folder. Invalid path of Unreal project!\n"
-        if not os.path.exists(self.ui.text_MapPath.toPlainText()):
+        if not os.path.exists(map_dir) or os.path.relpath(map_dir, content_dir).startswith(os.pardir):
             msgInfo += "Invalid Map path!\n"
-        if not os.path.exists(self.ui.text_ModelPath.toPlainText()):
+        if not os.path.exists(model_dir) or os.path.relpath(model_dir, content_dir).startswith(os.pardir):
             msgInfo += "Invalid Model path!\n"
         if self.export_fbx and not os.path.exists(self.ui.text_FbxPath.toPlainText()):
             msgInfo += "Invalid FBX path!\n"
@@ -112,22 +116,29 @@ class ExportWindow(QtWidgets.QWidget):
 
     def export_asset(self):
         if self.check_export_path():
+            project_dir = self.ui.text_ProjectPath.toPlainText()
             if self.export_fbx:
                 fbx_dir = self.ui.text_FbxPath.toPlainText()
             else:
-                project_dir = self.ui.text_ProjectPath.toPlainText()
-                fbx_dir = project_dir + '/Fbx_temp/'
+                fbx_dir = os.path.join(project_dir, "Content", "Fbx_temp", "")
+                if not os.path.exists(fbx_dir):
+                    os.mkdir(fbx_dir)
+            import_dir = os.path.abspath(self.ui.text_ModelPath.toPlainText())
             # export assets to the corresponding folders
-            export.export_selected_mesh(fbx_dir, keepFbx=self.export_fbx)
+            export.export_selected_mesh(fbx_dir, import_dir, project_dir, keepFbx=self.export_fbx)
 
     def export_scene(self):
         if self.check_export_path():
+            project_dir = self.ui.text_ProjectPath.toPlainText()
             if self.export_fbx:
                 fbx_dir = self.ui.text_FbxPath.toPlainText()
             else:
                 project_dir = self.ui.text_ProjectPath.toPlainText()
-                fbx_dir = project_dir + '/Fbx_temp/'
-            export.export_scene_meshes(fbx_dir, keepFbx=self.export_fbx)
+                fbx_dir = os.path.join(project_dir, "Content", "Fbx_temp", "")
+                if not os.path.exists(fbx_dir):
+                    os.mkdir(fbx_dir)
+            import_dir = os.path.abspath(self.ui.text_ModelPath.toPlainText())
+            export.export_scene_meshes(fbx_dir, import_dir, project_dir, keepFbx=self.export_fbx)
 
     def restart_unreal_link(self):
         controller.start_RPC_servers()

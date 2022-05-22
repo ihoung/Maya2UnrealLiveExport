@@ -15,7 +15,7 @@ import remote_execution
 
 try:
     import unreal
-except ModuleNotFoundError:
+except (ModuleNotFoundError if sys.version_info.major == 3 else ImportError):
     pass
 
 REMAP_PAIRS = []
