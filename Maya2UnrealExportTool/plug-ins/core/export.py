@@ -12,7 +12,7 @@ if sys.version_info.major == 2:
     reload(utilities)
 
 
-def export_scene_meshes(fbx_dir, import_dir, project_path, keepFbx = False):
+def export_scene_meshes(fbx_dir, import_dir, project_path):
     if not fbx_dir:
         return
 
@@ -31,7 +31,7 @@ def export_scene_meshes(fbx_dir, import_dir, project_path, keepFbx = False):
     OM.MGlobal.setActiveSelectionList(selection_list)
 
 
-def export_selected_mesh(fbx_dir, import_dir, project_path, keepFbx = False):
+def export_selected_mesh(fbx_dir, import_dir, project_path):
     if not fbx_dir:
         return
 
@@ -42,7 +42,7 @@ def export_selected_mesh(fbx_dir, import_dir, project_path, keepFbx = False):
         nodeFn = OM.MFnDagNode(node)
         export_fbx(fbx_dir, nodeFn)
         # import to unreal
-        fbx_file_path = os.path.join(fbx_dir, node.name()+'.fbx').replace(os.sep,'/')
+        fbx_file_path = os.path.join(fbx_dir, nodeFn.name()+'.fbx').replace(os.sep,'/')
         mesh_data = create_mesh_data(nodeFn.name(), fbx_dir, import_dir, project_path)
         controller.unreal_import_asset(fbx_file_path, mesh_data, {})
 

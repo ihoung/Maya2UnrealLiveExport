@@ -52,6 +52,9 @@ class UnrealImportAsset(Unreal):
             )
             self._options.static_mesh_import_data = import_data
 
+            self._options.set_editor_property('import_as_skeletal', False)
+            self._options.set_editor_property('import_animations', False)
+
     def set_fbx_import_task_options(self):
         """
         Sets the FBX import options.
@@ -64,12 +67,19 @@ class UnrealImportAsset(Unreal):
             'automated',
             not self._property_data.get('advanced_ui_import', {}).get('value', False)
         )
+        self._import_task.set_editor_property('save', True)
 
         import_mesh = self._asset_data.get('import_mesh', False)
 
         # set the options
         self._options = unreal.FbxImportUI()
         self._options.set_editor_property('import_mesh', import_mesh)
+        # not import textures and material currently
+        self._options.set_editor_property('import_materials', False)
+        self._options.set_editor_property('import_textures', False)
+        # unreal.FbxStaticMeshImportData
+        self._options.static_mesh_import_data.set_editor_property('combine_meshes', True)
+        self._options.static_mesh_import_data.set_editor_property('auto_generate_collision', True)
 
         # set the static mesh import options
         self.set_static_mesh_import_options()
@@ -174,3 +184,7 @@ class UnrealRemoteCalls:
             asset_class=asset_class,
             factory=asset_factory
         )
+
+    @staticmethod
+    def get_project_path():
+        return unreal.Paths.project_dir()

@@ -43,5 +43,10 @@ def unreal_import_asset(file_path, asset_data, property_data):
             a
         }
     """
+    start_RPC_servers()
     # Convert unicode into str before sending to RPC client
     UnrealRemoteCalls.import_asset(str(file_path), asset_data, property_data)
+
+def get_current_project_path():
+    start_RPC_servers()
+    return UnrealRemoteCalls.get_project_path()
