@@ -16,6 +16,8 @@ def export_scene_meshes(fbx_dir, import_dir, project_path):
     if not fbx_dir:
         return
 
+    preset_fbx_export()
+
     # record current user selections to recover in the end
     selection_list = OM.MGlobal.getActiveSelectionList()
 
@@ -34,6 +36,8 @@ def export_scene_meshes(fbx_dir, import_dir, project_path):
 def export_selected_mesh(fbx_dir, import_dir, project_path):
     if not fbx_dir:
         return
+    
+    preset_fbx_export()
 
     selection_list = OM.MGlobal.getActiveSelectionList()
     it_selection = OM.MItSelectionList(selection_list)
@@ -66,6 +70,11 @@ def find_mesh_transforms():
             child_dag_it.next()
         dag_it.next()
     return selection_list
+
+
+def preset_fbx_export():
+    mel.eval('FBXExportConvertUnitString cm')
+    mel.eval('FBXExportScaleFactor 10.0')
 
 
 def export_fbx(dirpath, nodeFn):
