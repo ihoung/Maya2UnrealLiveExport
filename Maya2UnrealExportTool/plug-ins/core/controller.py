@@ -47,6 +47,14 @@ def unreal_import_asset(file_path, asset_data, property_data):
     # Convert unicode into str before sending to RPC client
     UnrealRemoteCalls.import_asset(str(file_path), asset_data, property_data)
 
+
 def get_current_project_path():
     start_RPC_servers()
     return UnrealRemoteCalls.get_project_path()
+
+
+def add_asset_into_level(transformation_data, create_new_level=True, level_name='', level_dir_path=''):
+    if create_new_level:
+        if not level_name or not level_dir_path:
+            return
+        UnrealRemoteCalls.create_and_open_new_level(str(level_name), str(level_dir_path))

@@ -15,10 +15,11 @@ from PySide2.QtGui import QColor, QFont
 from PySide2.QtUiTools import QUiLoader
 from shiboken2 import wrapInstance
 
-from core import controller, export
+from core import controller, export, utilities
 if sys.version_info <= (3,4):
     reload(controller)
     reload(export)
+    reload(utilities)
 
 maya_useNewAPI = True
 
@@ -46,6 +47,7 @@ class ExportWindow(QtWidgets.QWidget):
         self.ui.show()
         self.ui.btn_detectProjPath.clicked.connect(self.get_project_path)
         self.ui.btn_ProjectPathBrowser.clicked.connect(partial(self.open_dir_browser, 'Project'))
+        self.ui.checkBox_newLevel.stateChanged.connect(self.check_generating_new_level)
         self.ui.btn_MapPathBrowser.clicked.connect(partial(self.open_dir_browser, 'Map'))
         self.ui.btn_ModelPathBrowser.clicked.connect(partial(self.open_dir_browser, 'Model'))
         self.ui.btn_FbxPathBrowser.clicked.connect(partial(self.open_dir_browser, 'FBX')) 
@@ -55,6 +57,7 @@ class ExportWindow(QtWidgets.QWidget):
         self.ui.btn_exportSelected.clicked.connect(self.export_selected_asset)
         self.ui.btn_cancel.clicked.connect(self.close)
 
+        self.generate_new_level = True
         self.keep_fbx = False
 
     def open_dir_browser(self, browser_type):
@@ -88,6 +91,14 @@ class ExportWindow(QtWidgets.QWidget):
             if os.path.exists(content_dir + "FBXs"):
                 self.ui.text_FbxPath.setPlainText(content_dir + "FBXs")
 
+    def check_generating_new_level(self):
+        if self.ui.checkBox_newLevel.isChecked():
+            self.generate_new_level = True
+            self.ui.text_levelMapName.setEnabled(True)
+        else:
+            self.generate_new_level = False
+            self.ui.text_levelMapName.setEnabled(False)
+
     def check_fbx_storage_state(self):
         if self.ui.checkBox_keepFbx.isChecked():
             self.ui.text_FbxPath.setEnabled(True)
@@ -106,7 +117,7 @@ class ExportWindow(QtWidgets.QWidget):
         msgInfo = ""
         if not os.path.exists(content_dir):
             msgInfo += "Can't find 'Content' folder. Invalid path of Unreal project!\n"
-        if not os.path.exists(map_dir) or os.path.relpath(map_dir, content_dir).startswith(os.pardir):
+        if self.generate_new_level and (not os.path.exists(map_dir) or os.path.relpath(map_dir, content_dir).startswith(os.pardir)):
             msgInfo += "Invalid Map path!\n"
         if not os.path.exists(model_dir) or os.path.relpath(model_dir, content_dir).startswith(os.pardir):
             msgInfo += "Invalid Model path!\n"
@@ -138,6 +149,10 @@ class ExportWindow(QtWidgets.QWidget):
 
     def export_scene(self):
         if self.check_export_path():
+            new_level_name = self.ui.text_levelMapName.toPlainText()
+            if self.generate_new_level and not new_level_name:
+                cmds.confirmDialog(title="Error", message='New level name is empty!')
+                return
             project_dir = self.ui.text_ProjectPath.toPlainText()
             if self.keep_fbx:
                 fbx_dir = self.ui.text_FbxPath.toPlainText()
@@ -147,7 +162,14 @@ class ExportWindow(QtWidgets.QWidget):
                 if not os.path.exists(fbx_dir):
                     os.mkdir(fbx_dir)
             import_dir = os.path.abspath(self.ui.text_ModelPath.toPlainText())
-            export.export_scene_meshes(fbx_dir, import_dir, project_dir)
+            transformation_data = export.export_scene_meshes(fbx_dir, import_dir, project_dir)
+            map_dir = self.ui.text_MapPath.toPlainText()
+            controller.add_asset_into_level(
+                transformation_data, 
+                self.generate_new_level, 
+                new_level_name+'.umap',
+                utilities.get_unreal_format_path(map_dir, project_dir)
+            )
             # Delete temporary fbx files if don't want to keep them
             if not self.keep_fbx and os.path.exists(fbx_dir):
                 shutil.rmtree(fbx_dir)

@@ -6,7 +6,7 @@ class BaseRPCException(Exception):
     def __init__(self, message=None, line_link=''):
         self.message = message + line_link
         # super().__init__(self.message)
-        Exception.__init__(self.message)
+        Exception.__init__(self, self.message)
 
 
 class InvalidClassMethod(BaseRPCException):

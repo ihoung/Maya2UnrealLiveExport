@@ -188,3 +188,8 @@ class UnrealRemoteCalls:
     @staticmethod
     def get_project_path():
         return unreal.Paths.project_dir()
+
+    @staticmethod
+    def create_and_open_new_level(level_name, level_dir_path):
+        asset_path = os.path.join(level_dir_path, level_name)
+        unreal.EditorLevelLibrary.new_level(asset_path)

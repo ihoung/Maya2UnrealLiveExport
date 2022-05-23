@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>386</width>
-    <height>480</height>
+    <width>525</width>
+    <height>535</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -18,19 +18,19 @@
     <rect>
      <x>10</x>
      <y>70</y>
-     <width>361</width>
-     <height>271</height>
+     <width>501</width>
+     <height>321</height>
     </rect>
    </property>
    <property name="title">
-    <string>Path Details</string>
+    <string>Details</string>
    </property>
    <widget class="QPlainTextEdit" name="text_MapPath">
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>60</y>
-      <width>291</width>
+      <y>120</y>
+      <width>431</width>
       <height>21</height>
      </rect>
     </property>
@@ -58,8 +58,8 @@
    <widget class="QPushButton" name="btn_MapPathBrowser">
     <property name="geometry">
      <rect>
-      <x>310</x>
-      <y>60</y>
+      <x>450</x>
+      <y>120</y>
       <width>41</width>
       <height>21</height>
      </rect>
@@ -72,20 +72,20 @@
     <property name="geometry">
      <rect>
       <x>8</x>
-      <y>30</y>
+      <y>90</y>
       <width>291</width>
       <height>20</height>
      </rect>
     </property>
     <property name="text">
-     <string>Maps</string>
+     <string>Map Directory</string>
     </property>
    </widget>
    <widget class="QLabel" name="label_3">
     <property name="geometry">
      <rect>
       <x>8</x>
-      <y>110</y>
+      <y>170</y>
       <width>291</width>
       <height>20</height>
      </rect>
@@ -97,8 +97,8 @@
    <widget class="QPushButton" name="btn_ModelPathBrowser">
     <property name="geometry">
      <rect>
-      <x>310</x>
-      <y>140</y>
+      <x>450</x>
+      <y>200</y>
       <width>41</width>
       <height>21</height>
      </rect>
@@ -111,8 +111,8 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>140</y>
-      <width>291</width>
+      <y>200</y>
+      <width>431</width>
       <height>21</height>
      </rect>
     </property>
@@ -143,8 +143,8 @@
     </property>
     <property name="geometry">
      <rect>
-      <x>310</x>
-      <y>220</y>
+      <x>450</x>
+      <y>280</y>
       <width>41</width>
       <height>21</height>
      </rect>
@@ -160,8 +160,8 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>220</y>
-      <width>291</width>
+      <y>280</y>
+      <width>431</width>
       <height>21</height>
      </rect>
     </property>
@@ -190,7 +190,7 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>190</y>
+      <y>250</y>
       <width>291</width>
       <height>24</height>
      </rect>
@@ -205,13 +205,85 @@
      <bool>false</bool>
     </property>
    </widget>
+   <widget class="QCheckBox" name="checkBox_newLevel">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>30</y>
+      <width>481</width>
+      <height>24</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="locale">
+     <locale language="English" country="UnitedKingdom"/>
+    </property>
+    <property name="text">
+     <string>Create a new level (Import asset to current level if not checked)</string>
+    </property>
+    <property name="checked">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_4">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>60</y>
+      <width>131</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="locale">
+     <locale language="English" country="UnitedKingdom"/>
+    </property>
+    <property name="text">
+     <string>Level map name</string>
+    </property>
+   </widget>
+   <widget class="QPlainTextEdit" name="text_levelMapName">
+    <property name="geometry">
+     <rect>
+      <x>140</x>
+      <y>60</y>
+      <width>281</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>7</pointsize>
+     </font>
+    </property>
+    <property name="locale">
+     <locale language="English" country="UnitedKingdom"/>
+    </property>
+    <property name="verticalScrollBarPolicy">
+     <enum>Qt::ScrollBarAlwaysOff</enum>
+    </property>
+    <property name="horizontalScrollBarPolicy">
+     <enum>Qt::ScrollBarAlwaysOff</enum>
+    </property>
+    <property name="lineWrapMode">
+     <enum>QPlainTextEdit::NoWrap</enum>
+    </property>
+   </widget>
   </widget>
   <widget class="QWidget" name="horizontalLayoutWidget">
    <property name="geometry">
     <rect>
-     <x>10</x>
-     <y>390</y>
-     <width>363</width>
+     <x>20</x>
+     <y>450</y>
+     <width>481</width>
      <height>61</height>
     </rect>
    </property>
@@ -257,8 +329,8 @@
   <widget class="QPushButton" name="btn_restartLink">
    <property name="geometry">
     <rect>
-     <x>20</x>
-     <y>350</y>
+     <x>100</x>
+     <y>410</y>
      <width>341</width>
      <height>29</height>
     </rect>
@@ -270,8 +342,8 @@
   <widget class="QPushButton" name="btn_ProjectPathBrowser">
    <property name="geometry">
     <rect>
-     <x>330</x>
-     <y>41</y>
+     <x>460</x>
+     <y>40</y>
      <width>41</width>
      <height>21</height>
     </rect>
@@ -283,7 +355,7 @@
   <widget class="QLabel" name="label">
    <property name="geometry">
     <rect>
-     <x>10</x>
+     <x>20</x>
      <y>10</y>
      <width>151</width>
      <height>21</height>
@@ -298,7 +370,7 @@
     <rect>
      <x>13</x>
      <y>41</y>
-     <width>311</width>
+     <width>441</width>
      <height>21</height>
     </rect>
    </property>
@@ -326,16 +398,19 @@
   <widget class="QPushButton" name="btn_detectProjPath">
    <property name="geometry">
     <rect>
-     <x>160</x>
+     <x>210</x>
      <y>10</y>
-     <width>211</width>
+     <width>291</width>
      <height>21</height>
     </rect>
    </property>
    <property name="font">
     <font>
-     <pointsize>7</pointsize>
+     <pointsize>9</pointsize>
     </font>
+   </property>
+   <property name="locale">
+    <locale language="English" country="UnitedKingdom"/>
    </property>
    <property name="text">
     <string>Detect Current Opened Project</string>
