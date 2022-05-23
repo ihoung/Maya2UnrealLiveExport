@@ -18,10 +18,12 @@ def export_scene_meshes(fbx_dir, import_dir, project_path):
 
     preset_fbx_export()
 
+    # transformation data
+    shape_tranformation_data = {}
     # record current user selections to recover in the end
     selection_list = OM.MGlobal.getActiveSelectionList()
 
-    export_transform_nodes = find_mesh_transforms()
+    export_transform_nodes = find_mesh_transforms(shape_tranformation_data)
     for node in export_transform_nodes:
         export_fbx(fbx_dir, node)
         # import to unreal
@@ -31,6 +33,8 @@ def export_scene_meshes(fbx_dir, import_dir, project_path):
 
     # recover previous user selections
     OM.MGlobal.setActiveSelectionList(selection_list)
+
+    return shape_tranformation_data
 
 
 def export_selected_mesh(fbx_dir, import_dir, project_path):
@@ -55,20 +59,43 @@ def export_selected_mesh(fbx_dir, import_dir, project_path):
     OM.MGlobal.setActiveSelectionList(selection_list)
 
 
-def find_mesh_transforms():
+def find_mesh_transforms(shape_tranformation_data={}):
+    # Transformation of each 1st depth node
+    transformation_data = {}
+    # The hierarchy of Child shapes in each 1st depth node
+    node_hierarchy = {}
+
     dag_it = OM.MItDag(OM.MItDag.kBreadthFirst, OM.MFn.kTransform)
     selection_list = []
     while dag_it.depth() < 2:
-        # dag_path = OM.MDagPath.getAPathTo(it_nodes.thisNode())
+        # add transformation data of current 1st depth node
+        nodeFn = OM.MFnDagNode(dag_it.currentItem())
         child_dag_it = OM.MItDag()
         child_dag_it.reset(dag_it.currentItem(), OM.MItDag.kDepthFirst, OM.MFn.kMesh)
         while not child_dag_it.isDone():
             if child_dag_it.currentItem() is not dag_it.currentItem():
-                nodeFn = OM.MFnDagNode(dag_it.currentItem())
-                selection_list.append(nodeFn)
-                break
+                child_nodeFn = OM.MFnDagNode(child_dag_it.currentItem())
+                if nodeFn not in selection_list:
+                    selection_list.append(nodeFn)
+                    transformation_data[str(nodeFn.name())] = utilities.get_maya_node_transformation(nodeFn)
+                # add current child shape node to list
+                child_list = node_hierarchy.get(nodeFn.name(), [])
+                child_list.append(str(utilities.get_maya_mesh_node_name(child_nodeFn)))
+                node_hierarchy[str(nodeFn.name())] = child_list
             child_dag_it.next()
         dag_it.next()
+    
+    # get transformation data for each shape
+    for parent_obj, child_obj_list in node_hierarchy.items():
+        transformation = transformation_data.get(parent_obj, None)
+        if utilities.check_transformation_data(transformation):
+            for child_obj in child_obj_list:
+                if child_obj == parent_obj:
+                    shape_tranformation_data[child_obj] = transformation
+                else:
+                    name_with_prefix = '_'.join([parent_obj, child_obj])
+                    shape_tranformation_data[name_with_prefix] = transformation_data
+
     return selection_list
 
 

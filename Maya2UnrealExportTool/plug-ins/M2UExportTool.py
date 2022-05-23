@@ -166,8 +166,9 @@ class ExportWindow(QtWidgets.QWidget):
             map_dir = self.ui.text_MapPath.toPlainText()
             controller.add_asset_into_level(
                 transformation_data, 
+                utilities.get_unreal_format_path(import_dir, project_dir),
                 self.generate_new_level, 
-                new_level_name+'.umap',
+                new_level_name,
                 utilities.get_unreal_format_path(map_dir, project_dir)
             )
             # Delete temporary fbx files if don't want to keep them

@@ -1,5 +1,7 @@
 from imp import reload
+import json
 import sys
+import os
 import threading
 
 import remote_call
@@ -53,8 +55,14 @@ def get_current_project_path():
     return UnrealRemoteCalls.get_project_path()
 
 
-def add_asset_into_level(transformation_data, create_new_level=True, level_name='', level_dir_path=''):
+def add_asset_into_level(transformation_data, mesh_asset_path, create_new_level=True, level_name='', level_dir_path=''):
     if create_new_level:
         if not level_name or not level_dir_path:
             return
-        UnrealRemoteCalls.create_and_open_new_level(str(level_name), str(level_dir_path))
+        level_path = str(os.path.join(level_dir_path, level_name).replace(os.sep,'/'))
+        if UnrealRemoteCalls.asset_exists(level_path):
+            print('Level map "{}" already exists!'.format(level_name))
+            UnrealRemoteCalls.load_level(level_path)
+        else:
+            UnrealRemoteCalls.create_and_open_new_level(level_path)
+    UnrealRemoteCalls.add_asset_to_current_level((transformation_data), str(mesh_asset_path))

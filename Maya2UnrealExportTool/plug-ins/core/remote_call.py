@@ -190,6 +190,30 @@ class UnrealRemoteCalls:
         return unreal.Paths.project_dir()
 
     @staticmethod
-    def create_and_open_new_level(level_name, level_dir_path):
-        asset_path = os.path.join(level_dir_path, level_name)
+    def create_and_open_new_level(asset_path):
         unreal.EditorLevelLibrary.new_level(asset_path)
+
+    @staticmethod
+    def load_level(asset_path):
+        unreal.EditorLevelLibrary.save_current_level()
+        unreal.EditorLevelLibrary.load_level(asset_path)
+
+    @staticmethod
+    def add_asset_to_current_level(transformation_data, asset_path):
+        # actor = unreal.EditorLevelLibrary.spawn_actor_from_class(unreal.StaticMeshActor, unreal.Vector(10.0, 20.0, 30.0), unreal.Rotator(0.0, 0.0, 0.0))
+        # mesh_component = actor.get_component_by_class(unreal.StaticMeshComponent)
+        # mesh = unreal.EditorAssetLibrary.load_asset('/Game/Meshes/test_pTorus')
+        # mesh_component.set_static_mesh(mesh)
+        for mesh_name, transformation in transformation_data.items():
+            location_data = transformation.get('location', (0.0, 0.0, 0.0))
+            rotation_data = transformation.get('rotation', (0.0, 0.0, 0.0))
+            scale_data = transformation.get('scale', (1.0, 1.0, 1.0))
+            location = unreal.Vector(location_data[0], location_data[2], location_data[1])
+            rotation = unreal.Rotator(rotation_data[0], rotation_data[2], rotation_data[1])
+            scale = unreal.Vector(scale_data[0], scale_data[2], scale_data[1])
+            # spawn actor(object) in current level
+            actor = unreal.EditorLevelLibrary.spawn_actor_from_class(unreal.StaticMeshActor, location, rotation)
+            mesh_component = actor.get_component_by_class(unreal.StaticMeshComponent)
+            mesh_component.set_world_scale3d(scale)
+            mesh = unreal.EditorAssetLibrary.load_asset(os.path.join(asset_path, mesh_name).replace(os.sep,'/'))
+            mesh_component.set_static_mesh(mesh)
