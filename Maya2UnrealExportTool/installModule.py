@@ -42,7 +42,7 @@ def install_module(location):
 
 def check_maya_installed(dir_path):
     if dir_path:
-        mloc = dir_path
+        mloc = dir_path + '/'
     else:
         op_sys = platform.system()
         mloc = f"{Path.home()}{maya_locations.get(op_sys)}/"
@@ -58,7 +58,7 @@ if __name__ == "__main__":
     args = parse.parse_args()
 
     try:
-        m_loc = check_maya_installed(args.dirpath)
+        m_loc = check_maya_installed(str(args.dirpath))
     except:
         print("Error can't find maya install")
         sys.exit(0)
