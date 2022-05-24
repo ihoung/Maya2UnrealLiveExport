@@ -9,6 +9,15 @@ In this way, the entire Maya scene is exported in a single FBX file and then be 
 
 This tool optimize the data transfer method between Maya and Unreal, making it automatically. It also keep the pivot for each object. Of course, it could generate lots of FBX files as intermediate files. You can choose not to keep these files but recommended to keep them, because it could be convenient to reimport next time.
 
+> This tool has been tested on following versions: 
+> 
+> *Maya 2019 & 2020* 
+> 
+> *Unreal 4.25.4*
+> 
+> Other versions are still waiting for being checked.
+
+
 ## **Installation & Presetting**
 
 ### **For Maya**
