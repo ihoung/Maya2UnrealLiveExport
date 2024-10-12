@@ -58,7 +58,7 @@ if __name__ == "__main__":
     args = parse.parse_args()
 
     try:
-        m_loc = check_maya_installed(str(args.dirpath))
+        m_loc = check_maya_installed(str(args.dirpath) if args.dirpath else None)
     except:
         print("Error can't find maya install")
         sys.exit(0)
