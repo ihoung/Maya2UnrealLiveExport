@@ -4,10 +4,10 @@ import sys
 import os
 import threading
 
-import remote_call
-from dependencies import unreal
-from dependencies.rpc import maya_server
-from remote_call import UnrealRemoteCalls
+from . import remote_call
+from .dependencies import unreal
+from .dependencies.rpc import maya_server
+from .remote_call import UnrealRemoteCalls
 
 if sys.version_info.major == 2:
     reload(unreal)

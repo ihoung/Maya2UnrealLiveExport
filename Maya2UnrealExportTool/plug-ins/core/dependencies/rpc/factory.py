@@ -61,7 +61,7 @@ class RPCFactory:
             # inline_class = []
 
         for key in dir(client_module):
-            if key is 'unreal':
+            if key == 'unreal':
                 continue
 
             for line_number, line in enumerate(code):

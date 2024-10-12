@@ -9,11 +9,19 @@ import maya.api.OpenMayaUI as OpenMayaUI
 import maya.cmds as cmds
 import maya.OpenMayaMPx as OpenMayaMPx
 import maya.OpenMayaUI as omui
-from PySide2 import QtCore, QtWidgets
-from PySide2.QtCore import QFile
-from PySide2.QtGui import QColor, QFont
-from PySide2.QtUiTools import QUiLoader
-from shiboken2 import wrapInstance
+
+if int(cmds.about(v=True)) < 2025:
+    from PySide2 import QtCore, QtWidgets
+    from PySide2.QtCore import QFile
+    from PySide2.QtGui import QColor, QFont
+    from PySide2.QtUiTools import QUiLoader
+    from shiboken2 import wrapInstance
+else:
+    from PySide6 import QtCore, QtWidgets
+    from PySide6.QtCore import QFile
+    from PySide6.QtGui import QColor, QFont
+    from PySide6.QtUiTools import QUiLoader
+    from shiboken6 import wrapInstance
 
 from core import controller, export, utilities
 if sys.version_info <= (3,4):

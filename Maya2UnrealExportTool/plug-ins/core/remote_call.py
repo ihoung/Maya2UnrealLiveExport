@@ -14,9 +14,9 @@ try:
 except (ModuleNotFoundError if sys.version_info.major == 3 else ImportError):
     pass
 
-import dependencies.unreal as ue
-from dependencies.rpc import factory
-from dependencies.unreal import Unreal
+from .dependencies import unreal as ue
+from .dependencies.rpc import factory
+from .dependencies.unreal import Unreal
 
 reload(ue)
 reload(factory)

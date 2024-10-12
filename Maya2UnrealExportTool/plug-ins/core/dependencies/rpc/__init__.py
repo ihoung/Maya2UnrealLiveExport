@@ -1,4 +1,4 @@
-import client, factory
+from . import client, factory
 
 __all__ = [
     client,

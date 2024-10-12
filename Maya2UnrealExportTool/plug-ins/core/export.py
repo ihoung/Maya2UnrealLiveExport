@@ -5,8 +5,8 @@ import maya.mel as mel
 import os
 import sys
 
-import controller
-import utilities
+from . import controller
+from . import utilities
 if sys.version_info.major == 2:
     reload(controller)
     reload(utilities)
