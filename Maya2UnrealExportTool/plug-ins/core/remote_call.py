@@ -2,7 +2,6 @@
 # whose data parse is complex for other DCC tools except for Blender.
 # Only import model mesh (static mesh) currently, mostly using default import setting in unreal
 
-from imp import reload
 import os
 import json
 import time
@@ -14,12 +13,19 @@ try:
 except (ModuleNotFoundError if sys.version_info.major == 3 else ImportError):
     pass
 
-from .dependencies import unreal as ue
-from .dependencies.rpc import factory
-from .dependencies.unreal import Unreal
+try:
+    from .dependencies import unreal as ue
+    from .dependencies.rpc import factory
+    from .dependencies.unreal import Unreal
+except ImportError:
+    from dependencies import unreal as ue
+    from dependencies.rpc import factory
+    from dependencies.unreal import Unreal
 
-reload(ue)
-reload(factory)
+if sys.version_info.major == 2:
+    from imp import reload
+    reload(ue)
+    reload(factory)
 
 
 class UnrealImportAsset(Unreal):

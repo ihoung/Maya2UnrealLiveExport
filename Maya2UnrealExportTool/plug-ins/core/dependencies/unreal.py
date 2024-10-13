@@ -9,9 +9,8 @@ import inspect
 if sys.version_info.major == 3:
     from http.client import RemoteDisconnected
 
-sys.path.append(os.path.dirname(__file__))
-import rpc.factory
-import remote_execution
+from . import rpc
+from . import remote_execution
 
 try:
     import unreal

@@ -11,9 +11,9 @@ This tool optimize the data transfer method between Maya and Unreal, making it a
 
 > This tool has been tested on following versions: 
 > 
-> *Maya 2019 & 2020* 
+> *Maya 2019, 2020 & 2025* 
 > 
-> *Unreal 4.25.4*
+> *Unreal 4.25.4 & 5.3.1*
 > 
 > Other versions are still waiting for being checked.
 

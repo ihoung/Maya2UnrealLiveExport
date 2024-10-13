@@ -54,8 +54,10 @@ class RPCFactory:
                 )
                 break
         
+        path_import_code = 'sys.path.append(r"{}")'.format(os.path.dirname(server_module_path).replace(os.sep, '/'))
+        if path_import_code not in import_code:
+            import_code.append(path_import_code)
         if sys.version_info.major == 2:
-            import_code.append('sys.path.append(r"{}")'.format(os.path.dirname(server_module_path).replace(os.sep, '/')))
             import_code.append('import imp')
             # insert import class as inline
             # inline_class = []
@@ -68,7 +70,7 @@ class RPCFactory:
                 if line.startswith('def '):
                     continue
 
-                if key in re.split('\.|\(| ', line.strip()):
+                if key in re.split(r'\.|\(| ', line.strip()):
                     if os.path.basename(self.file_path) == '__init__.py':
                         base_name = os.path.basename(os.path.dirname(self.file_path))
                     else:
@@ -76,13 +78,17 @@ class RPCFactory:
 
                     module_name, file_extension = os.path.splitext(base_name)
                     if sys.version_info.major == 3:
-                        import_code.append(
-                            '{0} = SourceFileLoader("{0}", r"{1}").load_module()'.format(module_name,server_module_path)
-                        )
+                        source_import_code = '{0} = SourceFileLoader("{0}", r"{1}").load_module()'.format(module_name,server_module_path)
+                        if source_import_code not in import_code:
+                            import_code.append(source_import_code)
                     else: # python2
                         # inline_class.append(key)
-                        import_code.append('imp.load_source("{0}", r"{1}")'.format(module_name,server_module_path.replace('.pyc','.py')))
-                    import_code.append('from {0} import {1}'.format(module_name,key))
+                        source_import_code = 'imp.load_source("{0}", r"{1}")'.format(module_name,server_module_path.replace('.pyc','.py'))
+                        if source_import_code not in import_code:
+                            import_code.append(source_import_code)
+                    relative_import_code = 'from {0} import {1}'.format(module_name, key)
+                    if relative_import_code not in import_code:
+                        import_code.append(relative_import_code)
                     break
 
         return textwrap.indent('\n'.join(import_code), ' ' * 4) if sys.version_info == 3 else '\n'.join(' '*4+line_text for line_text in import_code)
